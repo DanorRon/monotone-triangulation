@@ -9,7 +9,13 @@ public class MonotoneTriangulatorHoles
      * Main method
      */
 
+    /**
+     * Represents a vertex
+     */
     private class Vert
 
+    /**
+     * Represents an edge
+     */
     private class Edge
 }
