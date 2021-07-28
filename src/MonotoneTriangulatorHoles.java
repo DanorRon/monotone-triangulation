@@ -1,15 +1,16 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Queue;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Uses monotone triangulation to split a polygon, possibly with holes, into triangles
  * @author Ronan Venkat
  * @version 7/23/2021
  */
-public class MonotoneTriangulatorHoles
+public class MonotoneTriangulatorHoles //TODO rename
 {
+    List<Vert> vertices = new ArrayList<Vert>(); //combined data structure, erase on reset()
+
+    //TODO _input field containing all vertices, array containing all the positions of the holes, _output array of integers (mono_triangulate uses an ArrayList and copies to the output array), boolean saying if the calculation has been run (reset on clear() or reset())
+
     /**
      * Reads vertices from file
      * @param path The path of the file containing the polygon
@@ -73,7 +74,8 @@ public class MonotoneTriangulatorHoles
      * @return The copy of the source vertex (used later)
      */
     public Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts)
-    // The help HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
+    // The helper HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
+    // Use IntIntMap from LibGDX (copy code from LibGDX into a new class in this project)
 
     /**
      * Diagonalizes the polygon into monotone partitions
