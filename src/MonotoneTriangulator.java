@@ -5,7 +5,7 @@ import java.util.*;
  * @author Ronan Venkat
  * @version 7/23/2021
  */
-public class MonotoneTriangulatorHoles //TODO rename
+public class MonotoneTriangulator //TODO rename
 {
     List<Vert> vertices = new ArrayList<Vert>(); //combined data structure, erase on reset()
 
