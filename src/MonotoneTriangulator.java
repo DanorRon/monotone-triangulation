@@ -5,55 +5,27 @@ import java.util.*;
  * @author Ronan Venkat
  * @version 7/23/2021
  */
-public class MonotoneTriangulator //TODO rename
+public class MonotoneTriangulator
 {
+    // Use IntelliJ History to find stuff for driver class
+
     List<Vert> vertices = new ArrayList<Vert>(); //combined data structure, erase on reset()
 
-    //TODO _input field containing all vertices, array containing all the positions of the holes, _output array of integers (mono_triangulate uses an ArrayList and copies to the output array), boolean saying if the calculation has been run (reset on clear() or reset())
+    //TODO _input field containing all vertices, array containing all the positions of the holes, _output ArrayList of integers (size isn't known), boolean saying if the calculation has been run (reset on clear() or reset())
 
-    /**
-     * Reads vertices from file
-     * @param path The path of the file containing the polygon
-     * @return A List representing the polygon
-     */
-    public List<Vert> readVerts(String path) // I think that it returns a list, but I'm not sure
+    public MonotoneTriangulator()
 
-    /*
-    There was a parse method in the Python code, but this can probably be achieved with the args parameter in the main method
-     */
+    public void set(double[] points)
 
-    /**
-     * Displays the triangulation
-     * @param args The command-line arguments including the speed and scale of the drawing tool
-     * @param verts The List of vertices
-     * @return
-     */
-    public idk display(String[] args, List<Vert> verts) //Not sure if the parameters are right, and I don't know if something should be returned
+    public void addHole(double[] points)
 
-    /**
-     * Probably draws something, not really sure
-     */
-    public void drawCats(/* Some stuff */)
+    public void reset()
 
-    /**
-     * Probably draws something, not really sure
-     */
-    public void drawTris(/* Some stuff */)
+    public void clear()
 
-    /**
-     * Probably draws diagonals, not really sure
-     */
-    public void drawDiags(/* Some stuff */)
+    public void calculate()
 
-    /**
-     * Probably draws the separate sections or something, not really sure
-     */
-    public void drawParts(/* Some stuff */)
-
-    /**
-     * Pauses and asks for the user to press any key
-     */
-    public void pause()
+    public double[] getTriangles()
 
     /**
      * Categorizes each vertex into one of 5 types: Start, Split, End, Merge, Regular
@@ -83,14 +55,14 @@ public class MonotoneTriangulator //TODO rename
      * @param verts The List of vertices
      * @return A list called result in the Python code, maybe for debugging
      */
-    public List<something> diagonalize(Queue<Vert> queue, List<Vert> verts)
+    public void diagonalize(Queue<Vert> queue, List<Vert> verts)
 
     /**
-     * Partitions the polygon after the diagonals are drawn (I think)
+     * Partitions the polygon after the diagonals are drawn
      * @param verts The List of vertices
      * @return Something, not really sure
      */
-    public List<something> partition (List<Vert> verts)
+    public List<Integer> partition (List<Vert> verts)
 
     /**
      * Does something, not sure
@@ -98,19 +70,14 @@ public class MonotoneTriangulator //TODO rename
      * @param top idk
      * @param bot idk
      */
-    public Boolean isLeft(idk index, idk top, idk bot)
+    public boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
 
     /**
      * Triangulates the monotone partitions of the polygon
      * @param poly I think the polygon, but I'm not sure how it's represented
      * @return The final triangles of the triangulated polygon as an int array
      */
-    public int[] monoTriangulate(Something poly)
-
-    /**
-     * Main method
-     */
-    public static void main(String[] args)
+    public int[] monoTriangulate(/* some stuff */)
 
     /**
      * Represents a vertex
