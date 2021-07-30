@@ -10,22 +10,39 @@ public class MonotoneTriangulator
     // Use IntelliJ History to find stuff for driver class
 
     List<Vert> vertices = new ArrayList<Vert>(); //combined data structure, erase on reset()
-
     //TODO _input field containing all vertices, array containing all the positions of the holes, _output ArrayList of integers (size isn't known), boolean saying if the calculation has been run (reset on clear() or reset())
 
+    /**
+     * Creates a new MonotoneTriangulator
+     */
     public MonotoneTriangulator()
 
-    public void set(double[] points)
+    /**
+     * Adds the outer boundary to the polygon, clearing all current holes (and any current outer boundary)
+     * @param points The array of points to add to the polygon, in the format [x1, y1, x2, y2, ...]
+     * Precondition: points is in counterclockwise order
+     * Precondition: points.length is a multiple of 2
+     * @throws IllegalArgumentException points is in clockwise order
+     * @throws IllegalArgumentException points.length is not a multiple of 2
+     */
+    public void set(double[] points) throws IllegalArgumentException
 
-    public void addHole(double[] points)
+    /**
+     * Adds the outer boundary to the polygon
+     *
+     * Can be called multiple times
+     *
+     * @param points The array of points to add to the polygon, in the format [x1, y1, x2, y2, ...]
+     * Precondition: points is in clockwise order
+     * Precondition: points.length is a multiple of 2
+     * @throws IllegalArgumentException points is in counterclockwise order
+     * @throws IllegalArgumentException points.length is not a multiple of 2
+     */
+    public void addHole(double[] points) throws IllegalArgumentException
 
     public void reset()
 
     public void clear()
-
-    public void calculate()
-
-    public double[] getTriangles()
 
     /**
      * Categorizes each vertex into one of 5 types: Start, Split, End, Merge, Regular
@@ -78,6 +95,10 @@ public class MonotoneTriangulator
      * @return The final triangles of the triangulated polygon as an int array
      */
     public int[] monoTriangulate(/* some stuff */)
+
+    public void calculate()
+
+    public double[] getTriangles()
 
     /**
      * Represents a vertex
