@@ -9,8 +9,11 @@ public class MonotoneTriangulator
 {
     // Use IntelliJ History to find stuff for driver class
 
-    List<Vert> vertices = new ArrayList<Vert>(); //combined data structure, erase on reset()
-    //TODO _input field containing all vertices, array containing all the positions of the holes, _output ArrayList of integers (size isn't known), boolean saying if the calculation has been run (reset on clear() or reset())
+    private List<Vert> vertices = new ArrayList<Vert>(); // Combined data structure, erase on reset()
+    private List<Vert> _input = new ArrayList<Vert>(); // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays)
+    private List<Integer> holePositions = new ArrayList<Integer>(); // Contains the position of each hole in _input and vertices; NOT SURE IF THIS SHOULD BE AN ARRAYLIST
+    private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used)
+    private boolean calculationRun = false; // Indicates whether the calculation has been run; resets on clear() or reset()
 
     /**
      * Creates a new MonotoneTriangulator
