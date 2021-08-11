@@ -15,6 +15,8 @@ public class MonotoneTriangulator
     private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used)
     private boolean calculationRun = false; // Indicates whether the calculation has been run; resets on clear() or reset()
 
+    // TODO Difference between vertices and _input?
+
     /**
      * Creates a new MonotoneTriangulator
      */
@@ -30,6 +32,45 @@ public class MonotoneTriangulator
      * @throws IllegalArgumentException points.length is not a multiple of 2
      */
     public void set(double[] points) throws IllegalArgumentException
+    {
+        if (points is not in counterclockwise order) // TODO
+        {
+            throw new IllegalArgumentException("points is not in counterclockwise order");
+        }
+
+        if (points.length % 2 != 0)
+        {
+            throw new IllegalArgumentException("points.length is not a multiple of 2");
+        }
+
+        clear();
+
+        int pos = 0;
+        Vert head; // TODO Should this be called prev instead of head?
+        Vert curr;
+
+        for (int i = 0; i < points.length - 1; i++)
+        {
+            Vert vert = new Vert(pos, points[i], points[i+1]) // TODO not sure about these parameters
+            vertices.add(vert);
+            pos++;
+            if (head.equals(null))
+            {
+                head = vert;
+            }
+            if (!(curr.equals(null)))
+            {
+                curr.next = vert;
+                vert.prev = curr;
+            }
+            curr = vert;
+        }
+        if (!(curr.equals(null)))
+        {
+            curr.next = head;
+            head.prev = curr;
+        }
+    }
 
     /**
      * Adds the outer boundary to the polygon
@@ -43,6 +84,43 @@ public class MonotoneTriangulator
      * @throws IllegalArgumentException points.length is not a multiple of 2
      */
     public void addHole(double[] points) throws IllegalArgumentException
+    {
+        if (points is not in clockwise order) // TODO
+        {
+            throw new IllegalArgumentException("points is not in clockwise order");
+        }
+
+        if (points.length % 2 != 0)
+        {
+            throw new IllegalArgumentException("points.length is not a multiple of 2");
+        }
+
+        int pos = 0;
+        Vert head; // TODO Should this be called prev instead of head?
+        Vert curr;
+
+        for (int i = 0; i < points.length - 1; i++)
+        {
+            Vert vert = new Vert(pos, points[i], points[i+1]) // TODO not sure about these parameters
+            vertices.add(vert);
+            pos++;
+            if (head.equals(null))
+            {
+                head = vert;
+            }
+            if (!(curr.equals(null)))
+            {
+                curr.next = vert;
+                vert.prev = curr;
+            }
+            curr = vert;
+        }
+        if (!(curr.equals(null)))
+        {
+            curr.next = head;
+            head.prev = curr;
+        }
+    }
 
     /**
      * Clears triangulation calculation data, but does not erase user input (boundary and holes) //TODO What variables?
@@ -50,20 +128,74 @@ public class MonotoneTriangulator
      * Reclaims memory allowing one to triangulate later. Used for extrusion.
      */
     public void reset()
+    {
+        vertices.clear();
+        calculationRun = false;
+    }
 
     /**
      * Clears the program, including user input, to reset the program for another triangulation
      */
     public void clear()
+    {
+        vertices.clear();
+        _input.clear();
+        holePositions.clear();
+        calculationRun = false;
+    }
 
     /**
      * Categorizes each vertex into one of 5 types: Start, Split, End, Merge, Regular
      * @param verts The List of vertices
      * @return A queue (A priority queue in the textbook, but no elements are added so a queue works) containing the vertices in vertical order
      */
-    public Queue<Vert> categorize(List<Vert> verts)
-    // Vertices with larger y-coordinate have higher priority
-    // For vertices with the same y-coordinate, the one with smaller x-coordinate has higher priority
+    private Queue<Vert> categorize(List<Vert> verts)
+    {
+        // Vertices with larger y-coordinate have higher priority
+        // For vertices with the same y-coordinate, the one with smaller x-coordinate has higher priority
+
+        /*
+        Queue stuff, namely: Create a copy of verts (that won't change the original) as a queue, sort it (if it isn't a priority queue), and reverse it (using the ordering in class Vert)
+         */
+
+        Iterator<Vert> itr = queue.iterator();
+        while (itr.hasNext()) // TODO What about the beginning and end of the queue? There might not be a prev or next
+        {
+            Vert item = itr.next();
+            Vert neb1 = item.prev;
+            Vert neb2 = item.next;
+
+            if (neb1.compareTo(item) < 0 && neb2.compareTo(item) < 0)
+            {
+                if (item.ccw(neb1, neb2))
+                {
+                    item.type = "start";
+                }
+                else
+                {
+                    item.type = "split";
+                }
+            }
+            else if (neb1.compareTo(item) > 0 && neb2.compareTo(item) > 0)
+            {
+                if (item.ccw(neb1, neb2))
+                {
+                    item.type = "end";
+                }
+                else
+                {
+                    item.type = "merge";
+                }
+            }
+            else
+            {
+                item.type = "regular";
+            }
+        }
+
+        return queue;
+    }
+
 
     /**
      * Adds a diagonal between two vertices
@@ -74,7 +206,7 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return The copy of the source vertex (used later)
      */
-    public Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts)
+    private Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts)
     // The helper HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
     // Use IntIntMap from LibGDX (copy code from LibGDX into a new class in this project)
 
@@ -84,14 +216,14 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return A list called result in the Python code, maybe for debugging
      */
-    public void diagonalize(Queue<Vert> queue, List<Vert> verts)
+    private void diagonalize(Queue<Vert> queue, List<Vert> verts)
 
     /**
      * Partitions the polygon after the diagonals are drawn
      * @param verts The List of vertices
      * @return Something, not really sure
      */
-    public List<Integer> partition (List<Vert> verts)
+    private List<Integer> partition (List<Vert> verts)
 
     /**
      * Does something, not sure
@@ -99,14 +231,14 @@ public class MonotoneTriangulator
      * @param top idk
      * @param bot idk
      */
-    public boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
+    private boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
 
     /**
      * Triangulates the monotone partitions of the polygon
      * @param poly I think the polygon, but I'm not sure how it's represented
      * @return The final triangles of the triangulated polygon as an int array
      */
-    public int[] monoTriangulate(/* some stuff */)
+    private int[] monoTriangulate(/* some stuff */)
 
     /**
      * Calculates the monotone triangulation for the polygon
