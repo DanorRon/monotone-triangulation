@@ -22,10 +22,11 @@ public class MonotoneTriangulator
 
     /**
      * Adds the outer boundary to the polygon, clearing all current holes (and any current outer boundary)
+     *
+     * Clears any current holes
+     *
      * @param points The array of points to add to the polygon, in the format [x1, y1, x2, y2, ...]
-     * Precondition: points is in counterclockwise order
-     * Precondition: points.length is a multiple of 2
-     * @throws IllegalArgumentException points is in clockwise order
+     * @throws IllegalArgumentException points is not in counterclockwise order
      * @throws IllegalArgumentException points.length is not a multiple of 2
      */
     public void set(double[] points) throws IllegalArgumentException
@@ -33,18 +34,26 @@ public class MonotoneTriangulator
     /**
      * Adds the outer boundary to the polygon
      *
-     * Can be called multiple times
+     * Can be called multiple times.
+     *
+     * If any boundaries intersect, behavior is undefined.
      *
      * @param points The array of points to add to the polygon, in the format [x1, y1, x2, y2, ...]
-     * Precondition: points is in clockwise order
-     * Precondition: points.length is a multiple of 2
-     * @throws IllegalArgumentException points is in counterclockwise order
+     * @throws IllegalArgumentException points is not in clockwise order
      * @throws IllegalArgumentException points.length is not a multiple of 2
      */
     public void addHole(double[] points) throws IllegalArgumentException
 
+    /**
+     * Clears triangulation calculation data, but does not erase user input (boundary and holes) //TODO What variables?
+     *
+     * Reclaims memory allowing one to triangulate later. Used for extrusion.
+     */
     public void reset()
 
+    /**
+     * Clears the program, including user input, to reset the program for another triangulation
+     */
     public void clear()
 
     /**
@@ -99,8 +108,18 @@ public class MonotoneTriangulator
      */
     public int[] monoTriangulate(/* some stuff */)
 
+    /**
+     * Calculates the monotone triangulation for the polygon
+     *
+     * Categorize, diagonalize (add_diagonal), partition, mono_triangulate (is_left)
+     * // TODO throws exception if fails
+     */
     public void calculate()
 
+    /**
+     * Returns the answer after calculation
+     * @return an array representing the triangulated polygon // TODO Are there subarrays for each point?
+     */
     public double[] getTriangles()
 
     /**
