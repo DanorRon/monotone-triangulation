@@ -10,12 +10,19 @@ public class MonotoneTriangulator
     // Use IntelliJ History to find stuff for driver class
 
     private List<Vert> vertices = new ArrayList<Vert>(); // Combined data structure, erase on reset()
-    private List<Vert> _input = new ArrayList<Vert>(); // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays)
-    private List<Integer> holePositions = new ArrayList<Integer>(); // Contains the position of each hole in _input and vertices; NOT SURE IF THIS SHOULD BE AN ARRAYLIST
-    private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used)
+    private List<Vert> _input = new ArrayList<Vert>(); // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays) TODO use arraycopy
+    private List<Integer> holePositions = new ArrayList<Integer>(); // Contains the position of each hole in _input and vertices; NOT SURE IF THIS SHOULD BE AN ARRAYLIST TODO create new class floatArray for _input and holePositions
+    private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used) TODO don't use floatArray class for the sake of higher precision with integers
     private boolean calculationRun = false; // Indicates whether the calculation has been run; resets on clear() or reset()
 
+    // TODO Remove underscores for _input and _output, possibly
+
     // TODO Difference between vertices and _input?
+
+    // TODO Don't make combined data structure until calculate
+
+
+    // TODO Possibly create convenience constructor which calls set
 
     /**
      * Creates a new MonotoneTriangulator
@@ -54,11 +61,11 @@ public class MonotoneTriangulator
             Vert vert = new Vert(pos, points[i], points[i+1]) // TODO not sure about these parameters
             vertices.add(vert);
             pos++;
-            if (head.equals(null))
+            if (head.equals(null)) // TODO change to ==
             {
                 head = vert;
             }
-            if (!(curr.equals(null)))
+            if (!(curr.equals(null))) // TODO change to ==
             {
                 curr.next = vert;
                 vert.prev = curr;
@@ -120,6 +127,8 @@ public class MonotoneTriangulator
             curr.next = head;
             head.prev = curr;
         }
+
+        // TODO Update holePositions
     }
 
     /**
@@ -158,6 +167,9 @@ public class MonotoneTriangulator
         Queue stuff, namely: Create a copy of verts (that won't change the original) as a queue, sort it (if it isn't a priority queue), and reverse it (using the ordering in class Vert)
          */
 
+        // TODO add List<Vert> queue = new ArrayList<Vert>(vertices);
+        // sort in reverse order
+
         Iterator<Vert> itr = queue.iterator();
         while (itr.hasNext()) // TODO What about the beginning and end of the queue? There might not be a prev or next
         {
@@ -169,7 +181,7 @@ public class MonotoneTriangulator
             {
                 if (item.ccw(neb1, neb2))
                 {
-                    item.type = "start";
+                    item.type = "start"; // TODO Use enum
                 }
                 else
                 {
@@ -258,9 +270,15 @@ public class MonotoneTriangulator
      * Represents a vertex
      */
     private class Vert
+    {
+        // TODO CompareTo, equals, toString, ccw, copy
+    }
 
     /**
      * Represents an edge
      */
     private class Edge
+    {
+        // TODO CompareTo, equals, toString
+    }
 }
