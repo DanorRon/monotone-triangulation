@@ -131,6 +131,8 @@ public class MonotoneTriangulator
                 // Recreate head
                 head = new Vert(i, _input[2 * i], _input[2 * i + 1]);
                 vertices.add(head);
+
+                prev = head; // This line should fix the issue with linking the doubly linked list
             }
             else
             {
