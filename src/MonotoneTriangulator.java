@@ -256,9 +256,64 @@ public class MonotoneTriangulator
     /**
      * Represents a vertex
      */
-    private class Vert
+    private class Vert implements Comparable<Vert> // TODO Add documentation
     {
-        // TODO CompareTo, equals, toString, ccw, copy
+        public int index;
+        public double x;
+        public double y;
+        public String type;
+        public Vert next;
+        public Vert prev;
+
+        public Vert(int index, double x, double y) // TODO What access should this be?
+        {
+            this.index = index;
+            this.x = x;
+            this.y = y;
+            this.type = "";
+            this.next = null;
+            this.prev = null;
+        }
+
+        public int compareTo(Vert other) // Counterclockwise rotation of the polygon
+        {
+            if (this.y == other.y)
+            {
+                return Double.compare(this.x, other.x);
+            }
+            return Double.compare(this.y, other.y);
+        }
+
+        public boolean equals(Object other) // TODO Is this right?
+        {
+            if (other == this) return true;
+            if (!(other instanceof Vert)) return false;
+            Vert v = (Vert) other;
+            return this.index == v.index;
+        }
+
+        public String toString()
+        {
+            String str = index + "-(" + x + ", " + y + ")";
+            if (!type.equals("")) str += "-[" + type + "]";
+            return str;
+        }
+
+        public boolean ccw(Vert a, Vert b)
+        {
+            double val  = (b.y - a.y) * (this.x - a.x);
+            val -= (b.x - a.x) * (this.y - a.y);
+            return val > 0;
+        }
+
+        public Vert copy()
+        {
+            Vert result = new Vert(index, x, y);
+            result.type = type;
+            result.prev = prev;
+            result.next = next;
+            return result;
+        }
     }
 
     /**
