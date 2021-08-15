@@ -143,7 +143,7 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return A queue (A priority queue in the textbook, but no elements are added so a queue works) containing the vertices in vertical order
      */
-    private Queue<Vert> categorize(List<Vert> verts)
+    private List<Vert> categorize(List<Vert> verts)
     {
         // Vertices with larger y-coordinate have higher priority
         // For vertices with the same y-coordinate, the one with smaller x-coordinate has higher priority
