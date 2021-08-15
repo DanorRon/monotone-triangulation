@@ -10,17 +10,12 @@ public class MonotoneTriangulator
     // Use IntelliJ History to find stuff for driver class
 
     private List<Vert> vertices = new ArrayList<Vert>(); // Combined data structure, erase on reset()
-    private List<Vert> _input = new ArrayList<Vert>(); // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays) TODO use arraycopy
+    private double[] _input = new double[0]; // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays)
     private List<Integer> holePositions = new ArrayList<Integer>(); // Contains the position of each hole in _input and vertices; NOT SURE IF THIS SHOULD BE AN ARRAYLIST TODO create new class floatArray for _input and holePositions
     private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used) TODO don't use floatArray class for the sake of higher precision with integers
     private boolean calculationRun = false; // Indicates whether the calculation has been run; resets on clear() or reset()
 
     // TODO Remove underscores for _input and _output, possibly
-
-    // TODO Difference between vertices and _input?
-
-    // TODO Don't make combined data structure until calculate
-
 
     // TODO Possibly create convenience constructor which calls set
 
@@ -52,31 +47,7 @@ public class MonotoneTriangulator
 
         clear();
 
-        int pos = 0;
-        Vert head; // TODO Should this be called prev instead of head?
-        Vert curr;
-
-        for (int i = 0; i < points.length - 1; i++)
-        {
-            Vert vert = new Vert(pos, points[i], points[i+1]) // TODO not sure about these parameters
-            vertices.add(vert);
-            pos++;
-            if (head.equals(null)) // TODO change to ==
-            {
-                head = vert;
-            }
-            if (!(curr.equals(null))) // TODO change to ==
-            {
-                curr.next = vert;
-                vert.prev = curr;
-            }
-            curr = vert;
-        }
-        if (!(curr.equals(null)))
-        {
-            curr.next = head;
-            head.prev = curr;
-        }
+        System.arraycopy(points, 0, _input, 0, points.length); // Would it be faster/better to just let _input = points?
     }
 
     /**
@@ -102,37 +73,13 @@ public class MonotoneTriangulator
             throw new IllegalArgumentException("points.length is not a multiple of 2");
         }
 
-        int pos = 0;
-        Vert head; // TODO Should this be called prev instead of head?
-        Vert curr;
+        holePositions.add(_input.length);
 
-        for (int i = 0; i < points.length - 1; i++)
-        {
-            Vert vert = new Vert(pos, points[i], points[i+1]) // TODO not sure about these parameters
-            vertices.add(vert);
-            pos++;
-            if (head.equals(null))
-            {
-                head = vert;
-            }
-            if (!(curr.equals(null)))
-            {
-                curr.next = vert;
-                vert.prev = curr;
-            }
-            curr = vert;
-        }
-        if (!(curr.equals(null)))
-        {
-            curr.next = head;
-            head.prev = curr;
-        }
-
-        // TODO Update holePositions
+        System.arraycopy(points, 0, _input, _input.length, points.length);
     }
 
     /**
-     * Clears triangulation calculation data, but does not erase user input (boundary and holes) //TODO What variables?
+     * Clears triangulation calculation data, but does not erase user input (boundary and holes)
      *
      * Reclaims memory allowing one to triangulate later. Used for extrusion.
      */
@@ -148,9 +95,47 @@ public class MonotoneTriangulator
     public void clear()
     {
         vertices.clear();
-        _input.clear();
+        _input = new double[0];
         holePositions.clear();
+        _output.clear();
         calculationRun = false;
+    }
+
+    /**
+     * Builds vertices from _input, and links elements of vertices together to make it a doubly linked list as well as an array
+     */
+    private void createCombinedDataStructure()
+    {
+        Vert head = new Vert(0, _input[0], _input[1]);
+        vertices.add(head);
+        Vert prev = head;
+
+        for (int i = 1; i < _input.length / 2; i++) // TODO What if the boundary or hole isn't large enough
+        {
+            if (holePositions.contains(i * 2))
+            {
+                // Link back
+                prev.next = head;
+                head.prev = prev;
+
+                // Recreate head
+                head = new Vert(i, _input[2 * i], _input[2 * i + 1]);
+
+                // Jump forward
+                i++
+            }
+            else
+            {
+                Vert curr = new Vert(i, _input[2 * i], _input[2 * i + 1]);
+                vertices.add(curr);
+                prev.next = curr;
+                curr.prev = prev;
+                prev = curr;
+            }
+        }
+
+        prev.next = head;
+        head.prev = prev;
     }
 
     /**
@@ -167,8 +152,9 @@ public class MonotoneTriangulator
         Queue stuff, namely: Create a copy of verts (that won't change the original) as a queue, sort it (if it isn't a priority queue), and reverse it (using the ordering in class Vert)
          */
 
-        // TODO add List<Vert> queue = new ArrayList<Vert>(vertices);
-        // sort in reverse order
+        List<Vert> queue = new ArrayList<Vert>(vertices);
+        Collections.sort(queue);
+        Collections.reverse(queue);
 
         Iterator<Vert> itr = queue.iterator();
         while (itr.hasNext()) // TODO What about the beginning and end of the queue? There might not be a prev or next
@@ -263,6 +249,7 @@ public class MonotoneTriangulator
     /**
      * Returns the answer after calculation
      * @return an array representing the triangulated polygon // TODO Are there subarrays for each point?
+     * // TODO Should this return something, or modify _output?
      */
     public double[] getTriangles()
 
