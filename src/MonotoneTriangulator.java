@@ -49,7 +49,10 @@ public class MonotoneTriangulator
 
         clear();
 
-        System.arraycopy(points, 0, _input, 0, points.length); // Would it be faster/better to just let _input = points?
+        double[] destination = new double[_input.length + points.length];
+        System.arraycopy(_input, 0, destination, 0, _input.length);
+        System.arraycopy(points, 0, destination, _input.length, points.length);
+        _input = destination;
     }
 
     /**
@@ -79,7 +82,10 @@ public class MonotoneTriangulator
 
         holePositions.add(_input.length);
 
-        System.arraycopy(points, 0, _input, _input.length, points.length);
+        double[] destination = new double[_input.length + points.length];
+        System.arraycopy(_input, 0, destination, 0, _input.length);
+        System.arraycopy(points, 0, destination, _input.length, points.length);
+        _input = destination;
     }
 
     /**
@@ -124,9 +130,7 @@ public class MonotoneTriangulator
 
                 // Recreate head
                 head = new Vert(i, _input[2 * i], _input[2 * i + 1]);
-
-                // Jump forward
-                i++;
+                vertices.add(head);
             }
             else
             {

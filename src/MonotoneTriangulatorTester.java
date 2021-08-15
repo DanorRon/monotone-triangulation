@@ -28,7 +28,7 @@ public class MonotoneTriangulatorTester
             {
                 String line = sc.nextLine();
 
-                if (line.equals("---"))
+                if (line.equals("---")) // There's a --- at the end of the file as well
                 {
                     if (useSet)
                     {
@@ -44,8 +44,8 @@ public class MonotoneTriangulatorTester
                 else
                 {
                     String[] lineArray = line.split(" ");
-                    double x = Integer.parseInt(lineArray[0].substring(1, lineArray[0].length() - 1));
-                    double y = Integer.parseInt(lineArray[1].substring(0, lineArray[1].length() - 1));
+                    double x = Double.parseDouble(lineArray[0].substring(1, lineArray[0].length() - 1));
+                    double y = Double.parseDouble(lineArray[1].substring(0, lineArray[1].length() - 1));
                     points.add(x);
                     points.add(y);
                 }
