@@ -122,7 +122,7 @@ public class MonotoneTriangulator
                 head = new Vert(i, _input[2 * i], _input[2 * i + 1]);
 
                 // Jump forward
-                i++
+                i++;
             }
             else
             {
