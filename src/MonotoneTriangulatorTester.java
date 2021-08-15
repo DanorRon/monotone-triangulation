@@ -64,6 +64,10 @@ public class MonotoneTriangulatorTester
      */
     public static void main(String[] args)
     {
+        MonotoneTriangulator m = new MonotoneTriangulator();
+        MonotoneTriangulatorTester mt = new MonotoneTriangulatorTester();
 
+        mt.readVerts(m);
+        m.calculate();
     }
 }

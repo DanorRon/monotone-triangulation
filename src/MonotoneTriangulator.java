@@ -22,7 +22,7 @@ public class MonotoneTriangulator
     /**
      * Creates a new MonotoneTriangulator
      */
-    public MonotoneTriangulator()
+    public MonotoneTriangulator() {}
 
     /**
      * Adds the outer boundary to the polygon, clearing all current holes (and any current outer boundary)
@@ -35,10 +35,12 @@ public class MonotoneTriangulator
      */
     public void set(double[] points) throws IllegalArgumentException
     {
+        /*
         if (points is not in counterclockwise order) // TODO
         {
             throw new IllegalArgumentException("points is not in counterclockwise order");
         }
+         */
 
         if (points.length % 2 != 0)
         {
@@ -63,10 +65,12 @@ public class MonotoneTriangulator
      */
     public void addHole(double[] points) throws IllegalArgumentException
     {
+        /*
         if (points is not in clockwise order) // TODO
         {
             throw new IllegalArgumentException("points is not in clockwise order");
         }
+         */
 
         if (points.length % 2 != 0)
         {
@@ -204,7 +208,7 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return The copy of the source vertex (used later)
      */
-    private Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts)
+    private Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts) {return null;}
     // The helper HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
     // Use IntIntMap from LibGDX (copy code from LibGDX into a new class in this project)
 
@@ -214,14 +218,14 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return A list called result in the Python code, maybe for debugging
      */
-    private void diagonalize(Queue<Vert> queue, List<Vert> verts)
+    private void diagonalize(Queue<Vert> queue, List<Vert> verts) {}
 
     /**
      * Partitions the polygon after the diagonals are drawn
      * @param verts The List of vertices
      * @return Something, not really sure
      */
-    private List<Integer> partition (List<Vert> verts)
+    private List<Integer> partition (List<Vert> verts) {return null;}
 
     /**
      * Does something, not sure
@@ -229,14 +233,14 @@ public class MonotoneTriangulator
      * @param top idk
      * @param bot idk
      */
-    private boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
+    private boolean isLeft(Vert index, Vert top, Vert bot) {return false;} // Used to find the left and right branches of the monotone polygon
 
     /**
      * Triangulates the monotone partitions of the polygon
-     * @param poly I think the polygon, but I'm not sure how it's represented
+     * /* @param poly I think the polygon, but I'm not sure how it's represented
      * @return The final triangles of the triangulated polygon as an int array
      */
-    private int[] monoTriangulate(/* some stuff */)
+    private int[] monoTriangulate(/* some stuff */) {return null;}
 
     /**
      * Calculates the monotone triangulation for the polygon
@@ -245,13 +249,21 @@ public class MonotoneTriangulator
      * // TODO throws exception if fails
      */
     public void calculate()
+    {
+        createCombinedDataStructure();
+        List<Vert> queue = categorize(vertices);
+        for (Vert v : queue)
+        {
+            System.out.println(v);
+        }
+    }
 
     /**
      * Returns the answer after calculation
      * @return an array representing the triangulated polygon // TODO Are there subarrays for each point?
      * // TODO Should this return something, or modify _output?
      */
-    public double[] getTriangles()
+    public double[] getTriangles() {return null;}
 
     /**
      * Represents a vertex
