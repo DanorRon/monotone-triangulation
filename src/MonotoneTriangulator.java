@@ -162,7 +162,7 @@ public class MonotoneTriangulator
         Queue stuff, namely: Create a copy of verts (that won't change the original) as a queue, sort it (if it isn't a priority queue), and reverse it (using the ordering in class Vert)
          */
 
-        List<Vert> queue = new ArrayList<Vert>(vertices);
+        List<Vert> queue = new ArrayList<Vert>(verts);
         Collections.sort(queue);
         Collections.reverse(queue);
 
@@ -204,7 +204,6 @@ public class MonotoneTriangulator
         return queue;
     }
 
-
     /**
      * Adds a diagonal between two vertices
      * @param src The source vertex
@@ -214,9 +213,65 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return The copy of the source vertex (used later)
      */
-    private Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts) {return null;}
-    // The helper HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
-    // Use IntIntMap from LibGDX (copy code from LibGDX into a new class in this project)
+    private Vert addDiagonal(int src, int dst, HashMap<Integer, Integer> help, TreeSet<Edge> tree, List<Vert> verts)
+    {
+        // The helper HashMap might not be from Integer to Integer like in the Python code; Java seems to not support int->int, only Integer->Integer
+        // Use IntIntMap from LibGDX (copy code from LibGDX into a new class in this project)
+
+        //Find the originals
+        Vert orig1 = verts.get(src);
+        Vert orig2 = verts.get(dst);
+
+        // Copy the nodes so we can split
+        Vert copy1 = orig1.copy();
+        copy1.index = verts.size();
+        Vert copy2 = orig2.copy();
+        copy2.index = verts.size() + 1;
+
+        orig2.next.prev = copy2;
+        orig1.next.prev = copy1;
+
+        // This does the split
+        orig1.next = copy2;
+        copy2.prev = orig1;
+        orig2.next = copy1;
+        copy1.prev = orig2;
+
+        // Update support structures
+        if (help.containsKey(src))
+        {
+            help.put(copy1.index, src);
+        }
+
+        // TODO Should tree reference type be Set or TreeSet
+
+        List<Edge> treeList = new ArrayList<Edge>(tree);
+
+        Edge edge = new Edge(src,verts);
+        if (tree.contains(edge))
+        {
+            int pos = treeList.indexOf(edge);
+            treeList.get(pos).index = copy1.index;
+        }
+
+        if (help.containsKey(dst))
+        {
+            help.put(copy2.index, dst);
+        }
+
+        Edge edge = new Edge(dst,verts);
+        if (tree.contains(edge))
+        {
+            int pos = treeList.indexOf(edge);
+            treeList.get(pos).index = copy2.index;
+        }
+
+        verts.add(copy1);
+        verts.add(copy2);
+
+        // Returns the copy of the source vertex (we need it later)
+        return copy1;
+    }
 
     /**
      * Diagonalizes the polygon into monotone partitions
