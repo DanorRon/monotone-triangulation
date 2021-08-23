@@ -240,30 +240,28 @@ public class MonotoneTriangulator
         // Update support structures
         if (help.containsKey(src))
         {
-            help.put(copy1.index, src);
+            help.put(copy1.index, help.get(src));
         }
 
         // TODO Should tree reference type be Set or TreeSet
 
-        List<Edge> treeList = new ArrayList<Edge>(tree);
-
         Edge edge = new Edge(src,verts);
         if (tree.contains(edge))
         {
-            int pos = treeList.indexOf(edge);
-            treeList.get(pos).index = copy1.index;
+            Edge orig = tree.floor(edge);
+            orig.index = copy1.index;
         }
 
         if (help.containsKey(dst))
         {
-            help.put(copy2.index, dst);
+            help.put(copy2.index, help.get(dst));
         }
 
         Edge edge = new Edge(dst,verts);
         if (tree.contains(edge))
         {
-            int pos = treeList.indexOf(edge);
-            treeList.get(pos).index = copy2.index;
+            Edge orig = tree.floor(edge);
+            orig.index = copy2.index;
         }
 
         verts.add(copy1);
