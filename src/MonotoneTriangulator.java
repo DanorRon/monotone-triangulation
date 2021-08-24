@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -310,10 +313,21 @@ public class MonotoneTriangulator
     public void calculate()
     {
         createCombinedDataStructure();
+
         List<Vert> queue = categorize(vertices);
-        for (Vert v : queue)
+        try
         {
-            System.out.println(v);
+            FileWriter w1 = new FileWriter(new File("holes-categories.txt"));
+            for (Vert v : queue)
+            {
+                w1.write("(" + v.x + "," + v.y + ")\t" + v.type + "\n");
+            }
+            w1.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 
