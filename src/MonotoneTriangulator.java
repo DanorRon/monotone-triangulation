@@ -257,7 +257,7 @@ public class MonotoneTriangulator
             help.put(copy2.index, help.get(dst));
         }
 
-        Edge edge = new Edge(dst,verts);
+        edge = new Edge(dst,verts);
         if (tree.contains(edge))
         {
             Edge orig = tree.floor(edge);
@@ -390,8 +390,62 @@ public class MonotoneTriangulator
     /**
      * Represents an edge
      */
-    private class Edge
+    private class Edge implements Comparable<Edge>  // TODO Add documentation
     {
         // TODO CompareTo, equals, toString
+
+        public int index;
+        List<Vert> verts;
+
+        public Edge(int index, List<Vert> verts) // TODO What access should this be?
+        {
+            this.index = index;
+            this.verts = verts;
+        }
+
+        public int compareTo(Edge other)
+        {
+            if (this.equals(other)) return 0; // TODO is this correct?
+
+            Vert shead = this.verts.get(this.index); // "this" isn't necessary here, but I think it helps clarify
+            Vert stail = shead.next;
+            Vert ohead = other.verts.get(other.index);
+            Vert otail = ohead.next;
+
+            if (ohead.y == otail.y)
+            {
+                if (shead.y == stail.y)
+                {
+                    return (shead.y < ohead.y) ? -1 : 1;
+                }
+                return stail.ccw(shead, ohead) ? -1 : 1;
+            }
+            else if (shead.y == stail.y)
+            {
+                return !otail.ccw(ohead, shead) ? -1 : 1;
+            }
+            else if (shead.y < ohead.y)
+            {
+                return !otail.ccw(ohead, shead) ? -1 : 1;
+            }
+            else
+            {
+                return stail.ccw(shead, ohead) ? -1 : 1;
+            }
+        }
+
+        public boolean equals(Object other) // TODO Is this right?
+        {
+            if (other == this) return true;
+            if (!(other instanceof Edge)) return false;
+            Edge v = (Edge) other;
+            return this.index == v.index;
+        }
+
+        public String toString()
+        {
+            Vert v = verts.get(index);
+            return v.toString() + " to " + (v.next).toString();
+        }
     }
 }
