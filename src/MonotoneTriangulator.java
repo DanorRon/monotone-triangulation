@@ -280,7 +280,104 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return A list called result in the Python code, maybe for debugging
      */
-    private void diagonalize(Queue<Vert> queue, List<Vert> verts) {}
+    private void diagonalize(Queue<Vert> queue, List<Vert> verts)
+    {
+        TreeSet<Edge> tree = new TreeSet<Edge>();
+        HashMap<Integer, Integer> help = new HashMap<Integer, Integer>();
+
+        for (Vert item : queue)
+        {
+            if (item.type.equals("start"))
+            {
+                Edge edge = new Edge(item.index, verts); // The index of an Edge is the index of its head vertex
+                tree.add(edge);
+                help.put(item.index, item.index);
+            }
+            else if (item.type.equals("end"))
+            {
+                int key = item.prev.index;
+                if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                {
+                    Vert prev = verts.get(help.get(key));
+                    addDiagonal(item.index, prev.index, help, tree, verts);
+                }
+                Edge edge = new Edge(key, verts);
+                tree.remove(edge);
+            }
+            else if (item.type.equals("split"))
+            {
+                // Finds the item right BEFORE item
+                Edge edge = new Edge(item.index, verts);
+                edge = tree.lower(edge); // TODO is this right?
+
+                Vert nbed = verts.get(help.get(edge.index)); // TODO What is nbed?
+                Vert copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                help.put(edge.index, item.index);
+                edge = new Edge(copy.index, verts);
+                tree.add(edge);
+                help.put(copy.index, copy.index);
+            }
+            else if (item.type.equals("merge"))
+            {
+                int key = item.prev.index;
+                Vert prev = item.prev;
+                Vert copy = item;
+                if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                {
+                    Vert nbed = verts.get(help.get(key));
+                    copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                }
+                Edge edge = new Edge(key, verts);
+                tree.remove(edge);
+
+                // Finds the item right BEFORE item
+                edge = new Edge(item.index, verts);
+                edge = tree.lower(edge); // TODO is this right?
+
+                Vert nbed = verts.get(help.get(edge.index)); // TODO What is nbed?
+                if (nbed.type == "merge")
+                {
+                    addDiagonal(copy.index, nbed.index, help, tree, verts);
+                }
+                help.put(edge.index, copy.index);
+            }
+            else if (item.type.equals("regular"))
+            {
+                Vert prev = item.prev;
+                Vert copy = item;
+                if (item.compareTo(prev) < 0)
+                {
+                    // Interior
+                    int key = item.prev.index;
+                    if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                    {
+                        Vert nbed = verts.get(help.get(key));
+                        copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                    }
+                    Edge edge = new Edge(key, verts);
+                    tree.remove(edge);
+
+                    edge = new Edge(copy.index, verts);
+                    tree.add(edge);
+                    help.put(copy.index, item.index);
+                }
+                else
+                {
+                    // Finds the item right BEFORE item
+                    Edge edge = new Edge(item.index, verts);
+                    edge = tree.lower(edge); // TODO is this right?
+
+                    Vert nbed = verts.get(help.get(edge.index));
+                    int key = nbed.index;
+                    if (nbed.type.equals("merge"))
+                    {
+                        addDiagonal(item.index, nbed.index, help, tree, verts);
+                    }
+                    help.put(edge.index, item.index);
+                }
+            }
+        }
+    }
 
     /**
      * Partitions the polygon after the diagonals are drawn
@@ -409,7 +506,7 @@ public class MonotoneTriangulator
         // TODO CompareTo, equals, toString
 
         public int index;
-        List<Vert> verts;
+        List<Vert> verts; // TODO Why is this a parameter for Edge
 
         public Edge(int index, List<Vert> verts) // TODO What access should this be?
         {
