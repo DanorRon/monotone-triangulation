@@ -384,7 +384,29 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return Something, not really sure
      */
-    private List<Integer> partition (List<Vert> verts) {return null;}
+    private List<List<Vert>> partition (List<Vert> verts)
+    {
+        List<List<Vert>> result = new ArrayList<List<Vert>>(); // TODO Is this correct?
+        HashSet<Integer> visited = new HashSet<Integer>();
+        for (Vert v : verts)
+        {
+            if (!visited.contains(v.index)) // Skip over all already visited elements
+            {
+                List<Vert> part = new ArrayList<Vert>();
+                visited.add(v.index);
+                part.add(v);
+                Vert curr = v.next;
+                while (!curr.equals(v)) // Stop after looping around
+                {
+                    visited.add(curr.index);
+                    part.add(curr);
+                    curr = curr.next;
+                }
+                result.add(part);
+            }
+        }
+        return result;
+    }
 
     /**
      * Does something, not sure
