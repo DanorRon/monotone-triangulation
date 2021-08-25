@@ -278,12 +278,14 @@ public class MonotoneTriangulator
      * Diagonalizes the polygon into monotone partitions
      * @param queue The queue of vertices, arranged vertically
      * @param verts The List of vertices
-     * @return A list called result in the Python code, maybe for debugging
+     * @return A List of 2-element double arrays for debugging
      */
-    private void diagonalize(Queue<Vert> queue, List<Vert> verts)
+    private List<double[]> diagonalize(Queue<Vert> queue, List<Vert> verts)
     {
         TreeSet<Edge> tree = new TreeSet<Edge>();
         HashMap<Integer, Integer> help = new HashMap<Integer, Integer>();
+
+        List<double[]> result = new ArrayList<double[]>();
 
         for (Vert item : queue)
         {
@@ -300,6 +302,7 @@ public class MonotoneTriangulator
                 {
                     Vert prev = verts.get(help.get(key));
                     addDiagonal(item.index, prev.index, help, tree, verts);
+                    result.add(new double[]{item.x, item.y, prev.x, prev.y});
                 }
                 Edge edge = new Edge(key, verts);
                 tree.remove(edge);
@@ -312,6 +315,7 @@ public class MonotoneTriangulator
 
                 Vert nbed = verts.get(help.get(edge.index)); // TODO What is nbed?
                 Vert copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                result.add(new double[]{item.x, item.y, nbed.x, nbed.y});
                 help.put(edge.index, item.index);
                 edge = new Edge(copy.index, verts);
                 tree.add(edge);
@@ -326,6 +330,7 @@ public class MonotoneTriangulator
                 {
                     Vert nbed = verts.get(help.get(key));
                     copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                    result.add(new double[]{item.x, item.y, nbed.x, nbed.y});
                 }
                 Edge edge = new Edge(key, verts);
                 tree.remove(edge);
@@ -338,6 +343,7 @@ public class MonotoneTriangulator
                 if (nbed.type == "merge")
                 {
                     addDiagonal(copy.index, nbed.index, help, tree, verts);
+                    result.add(new double[]{copy.x, copy.y, nbed.x, nbed.y});
                 }
                 help.put(edge.index, copy.index);
             }
@@ -353,6 +359,7 @@ public class MonotoneTriangulator
                     {
                         Vert nbed = verts.get(help.get(key));
                         copy = addDiagonal(item.index, nbed.index, help, tree, verts);
+                        result.add(new double[]{item.x, item.y, nbed.x, nbed.y});
                     }
                     Edge edge = new Edge(key, verts);
                     tree.remove(edge);
@@ -372,11 +379,14 @@ public class MonotoneTriangulator
                     if (nbed.type.equals("merge"))
                     {
                         addDiagonal(item.index, nbed.index, help, tree, verts);
+                        result.add(new double[]{item.x, item.y, nbed.x, nbed.y});
                     }
                     help.put(edge.index, item.index);
                 }
             }
         }
+
+        return result;
     }
 
     /**
@@ -582,3 +592,5 @@ public class MonotoneTriangulator
         }
     }
 }
+
+// TODO double or float?
