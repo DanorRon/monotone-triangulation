@@ -246,7 +246,7 @@ public class MonotoneTriangulator
             help.put(copy1.index, help.get(src));
         }
 
-        // TODO Should tree reference type be Set or TreeSet
+        // TODO Should tree reference type be Set or TreeSet - no
 
         Edge edge = new Edge(src,verts);
         if (tree.contains(edge))
@@ -280,7 +280,7 @@ public class MonotoneTriangulator
      * @param verts The List of vertices
      * @return A List of 2-element double arrays for debugging
      */
-    private List<double[]> diagonalize(Queue<Vert> queue, List<Vert> verts)
+    private List<double[]> diagonalize(List<Vert> queue, List<Vert> verts)
     {
         TreeSet<Edge> tree = new TreeSet<Edge>();
         HashMap<Integer, Integer> help = new HashMap<Integer, Integer>();
@@ -396,7 +396,7 @@ public class MonotoneTriangulator
      */
     private List<List<Vert>> partition (List<Vert> verts)
     {
-        List<List<Vert>> result = new ArrayList<List<Vert>>(); // TODO Is this correct?
+        List<List<Vert>> result = new ArrayList<List<Vert>>();
         HashSet<Integer> visited = new HashSet<Integer>();
         for (Vert v : verts)
         {
@@ -446,12 +446,57 @@ public class MonotoneTriangulator
         List<Vert> queue = categorize(vertices);
         try
         {
-            FileWriter w1 = new FileWriter(new File("holes-categories.txt"));
+            FileWriter w = new FileWriter(new File("holes-categories.txt"));
             for (Vert v : queue)
             {
-                w1.write("(" + v.x + "," + v.y + ")\t" + v.type + "\n");
+                w.write("(" + v.x + "," + v.y + ")\t" + v.type + "\n");
             }
-            w1.close();
+            w.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        List<double[]> lines = diagonalize(queue, vertices);
+        try
+        {
+            FileWriter w = new FileWriter(new File("holes-diagonals.txt"));
+            for (double[] line : lines)
+            {
+                w.write("(" + line[0] + "," + line[1] + ")\t(" + line[2] + "," + line[3] + ")" + "\n");
+            }
+            w.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        List<List<Vert>> parts = partition(vertices);
+        try
+        {
+            FileWriter w = new FileWriter(new File("holes-partitions.txt"));
+
+            boolean first = true;
+            for (List<Vert> poly : parts)
+            {
+                if (!first)
+                {
+                    w.write("---\n");
+                }
+                else
+                {
+                    first = false;
+                }
+                for (Vert v : poly)
+                {
+                    w.write("(" + v.x + "," + v.y + ")\n");
+                }
+            }
+            w.close();
         }
         catch (IOException e)
         {
@@ -459,6 +504,8 @@ public class MonotoneTriangulator
             e.printStackTrace();
         }
     }
+
+
 
     /**
      * Returns the answer after calculation

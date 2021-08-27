@@ -75,3 +75,5 @@ fabric.properties
 
 # Project-specific things
 /holes-categories.txt
+/holes-diagonals.txt
+/holes-partitions.txt
