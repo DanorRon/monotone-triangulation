@@ -180,27 +180,27 @@ public class MonotoneTriangulator
             {
                 if (item.ccw(neb1, neb2))
                 {
-                    item.type = "start"; // TODO Use enum
+                    item.type = Type.START; // TODO Use enum
                 }
                 else
                 {
-                    item.type = "split";
+                    item.type = Type.SPLIT;
                 }
             }
             else if (neb1.compareTo(item) > 0 && neb2.compareTo(item) > 0)
             {
                 if (item.ccw(neb1, neb2))
                 {
-                    item.type = "end";
+                    item.type = Type.END;
                 }
                 else
                 {
-                    item.type = "merge";
+                    item.type = Type.MERGE;
                 }
             }
             else
             {
-                item.type = "regular";
+                item.type = Type.REGULAR;
             }
         }
 
@@ -289,16 +289,16 @@ public class MonotoneTriangulator
 
         for (Vert item : queue)
         {
-            if (item.type.equals("start"))
+            if (item.type.equals(Type.START)) // TODO Use switch statement? == vs .equals()?
             {
                 Edge edge = new Edge(item.index, verts); // The index of an Edge is the index of its head vertex
                 tree.add(edge);
                 help.put(item.index, item.index);
             }
-            else if (item.type.equals("end"))
+            else if (item.type.equals(Type.END))
             {
                 int key = item.prev.index;
-                if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                if (help.containsKey(key) && verts.get(help.get(key)).type.equals(Type.MERGE))
                 {
                     Vert prev = verts.get(help.get(key));
                     addDiagonal(item.index, prev.index, help, tree, verts);
@@ -307,7 +307,7 @@ public class MonotoneTriangulator
                 Edge edge = new Edge(key, verts);
                 tree.remove(edge);
             }
-            else if (item.type.equals("split"))
+            else if (item.type.equals(Type.SPLIT))
             {
                 // Finds the item right BEFORE item
                 Edge edge = new Edge(item.index, verts);
@@ -321,12 +321,12 @@ public class MonotoneTriangulator
                 tree.add(edge);
                 help.put(copy.index, copy.index);
             }
-            else if (item.type.equals("merge"))
+            else if (item.type.equals(Type.MERGE))
             {
                 int key = item.prev.index;
                 Vert prev = item.prev;
                 Vert copy = item;
-                if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                if (help.containsKey(key) && verts.get(help.get(key)).type.equals(Type.MERGE))
                 {
                     Vert nbed = verts.get(help.get(key));
                     copy = addDiagonal(item.index, nbed.index, help, tree, verts);
@@ -340,14 +340,14 @@ public class MonotoneTriangulator
                 edge = tree.lower(edge); // TODO is this right?
 
                 Vert nbed = verts.get(help.get(edge.index)); // TODO What is nbed?
-                if (nbed.type == "merge")
+                if (nbed.type.equals(Type.MERGE))
                 {
                     addDiagonal(copy.index, nbed.index, help, tree, verts);
                     result.add(new double[]{copy.x, copy.y, nbed.x, nbed.y});
                 }
                 help.put(edge.index, copy.index);
             }
-            else if (item.type.equals("regular"))
+            else if (item.type.equals(Type.REGULAR))
             {
                 Vert prev = item.prev;
                 Vert copy = item;
@@ -355,7 +355,7 @@ public class MonotoneTriangulator
                 {
                     // Interior
                     int key = item.prev.index;
-                    if (help.containsKey(key) && verts.get(help.get(key)).type.equals("merge"))
+                    if (help.containsKey(key) && verts.get(help.get(key)).type.equals(Type.MERGE))
                     {
                         Vert nbed = verts.get(help.get(key));
                         copy = addDiagonal(item.index, nbed.index, help, tree, verts);
@@ -376,7 +376,7 @@ public class MonotoneTriangulator
 
                     Vert nbed = verts.get(help.get(edge.index));
                     int key = nbed.index;
-                    if (nbed.type.equals("merge"))
+                    if (nbed.type.equals(Type.MERGE))
                     {
                         addDiagonal(item.index, nbed.index, help, tree, verts);
                         result.add(new double[]{item.x, item.y, nbed.x, nbed.y});
@@ -522,7 +522,7 @@ public class MonotoneTriangulator
         public int index;
         public double x;
         public double y;
-        public String type;
+        public Type type;
         public Vert next;
         public Vert prev;
 
@@ -531,7 +531,7 @@ public class MonotoneTriangulator
             this.index = index;
             this.x = x;
             this.y = y;
-            this.type = "";
+            this.type = null; // TODO Is this bad
             this.next = null;
             this.prev = null;
         }
@@ -637,6 +637,16 @@ public class MonotoneTriangulator
             Vert v = verts.get(index);
             return v.toString() + " to " + (v.next).toString();
         }
+    }
+
+    // TODO Add documentation
+    enum Type
+    {
+        START,
+        END,
+        SPLIT,
+        MERGE,
+        REGULAR
     }
 }
 
