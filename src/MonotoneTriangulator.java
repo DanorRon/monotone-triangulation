@@ -424,7 +424,17 @@ public class MonotoneTriangulator
      * @param top idk
      * @param bot idk
      */
-    private boolean isLeft(Vert index, Vert top, Vert bot) {return false;} // Used to find the left and right branches of the monotone polygon
+    private boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
+    {
+        if (top.compareTo(bot) < 0)
+        {
+            return top.compareTo(index) < 0 && index.compareTo(bot) < 0;
+        }
+        else
+        {
+            return top.compareTo(index) < 0 || index.compareTo(bot) < 0;
+        }
+    }
 
     /**
      * Triangulates the monotone partitions of the polygon
