@@ -472,6 +472,54 @@ public class MonotoneTriangulator
                 side.put(botpos, 0);
             }
         }
+
+        int left = (toppos + 1) % poly.size();
+        while (left != botpos)
+        {
+            side.put(poly.get(left).index, 1);
+            left = (left + 1) % poly.size();
+        }
+
+        int rght = (toppos + poly.size() - 1) % poly.size();
+        while (rght != botpos)
+        {
+            side.put(poly.get(rght).index, -1);
+            rght = (rght + poly.size() - 1) % poly.size();
+        }
+
+        List<int[]> tris = new ArrayList<int[]>();
+        for (int x = 2; x < queue.size() - 1; x++)
+        {
+            int index = queue.get(x).index;
+            int last = stack.get(stkptr - 1);
+            if (side.get(index) != side.get(last)) // TODO != or .equals()?
+            {
+                for (int y = 0; y < stkptr - 1; y++)
+                {
+                    if (side.get(index) == 1)
+                    {
+                        tris.add(new int[]{stack.get(y + 1), stack.get(y), index});
+                    }
+                    else
+                    {
+                        tris.add(new int[]{stack.get(y), stack.get(y + 1), index});
+                    }
+                }
+                stack.clear();
+                stack.push(queue.get(x - 1).index);
+                stack.push(queue.get(x).index);
+                stkptr = 2;
+            }
+            else
+            {
+                stkptr--;
+                boolean abort = false;
+                while (stkptr > 0 && !abort)
+                {
+
+                }
+            }
+        }
     }
 
     /**
