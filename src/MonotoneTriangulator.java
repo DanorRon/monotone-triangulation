@@ -441,7 +441,38 @@ public class MonotoneTriangulator
      * /* @param poly I think the polygon, but I'm not sure how it's represented
      * @return The final triangles of the triangulated polygon as an int array
      */
-    private int[] monoTriangulate(/* some stuff */) {return null;}
+    private void monoTriangulate(List<Vert> poly)
+    {
+        List<Vert> queue = new ArrayList<Vert>(poly);
+        Collections.sort(queue);
+        Collections.reverse(queue);
+
+        int top = queue.get(0).index; // TODO Should this be a Vert or an int?
+        int bot = queue.get(queue.size() - 1).index;
+
+        LinkedList<Integer> stack = new LinkedList<Integer>(); // TODO Is this right (LinkedList and Integer)?
+        stack.push(queue.get(0).index);
+        stack.push(queue.get(0).index);
+        int stkptr = 2;
+
+        // Mark the sides
+        HashMap<Integer, Integer> side = new HashMap<Integer, Integer>(); // TODO Reference type?
+        int toppos = -1;
+        int botpos = -1;
+        for (int x = 0; x < poly.size(); x++)
+        {
+            if (poly.get(x).index == top)
+            {
+                toppos = x;
+                side.put(toppos, 0);
+            }
+            else if (poly.get(x).index == bot)
+            {
+                botpos = x;
+                side.put(botpos, 0);
+            }
+        }
+    }
 
     /**
      * Calculates the monotone triangulation for the polygon
