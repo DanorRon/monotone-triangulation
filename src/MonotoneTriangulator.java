@@ -16,7 +16,7 @@ public class MonotoneTriangulator
     private double[] _input = new double[0]; // Contains all vertices inputted by the user in the format [boundary, hole_1, ..., hole_n] (no subarrays)
     private List<Integer> holePositions = new ArrayList<Integer>(); // Contains the position of each hole in _input and vertices; NOT SURE IF THIS SHOULD BE AN ARRAYLIST TODO create new class floatArray for _input and holePositions
     private List<Integer> _output = new ArrayList<Integer>(); // Contains output of the calculation in the format [t1_1, t1_2, t1_3, ..., tn_1, tn_2, tn_3] (size isn't known because there are holes so an ArrayList is used) TODO don't use floatArray class for the sake of higher precision with integers
-    private boolean calculationRun = false; // Indicates whether the calculation has been run; resets on clear() or reset()
+    private boolean calculated = false; // Indicates whether the calculation has been run; resets on clear() or reset()
 
     // TODO Remove underscores for _input and _output, possibly
 
@@ -25,7 +25,20 @@ public class MonotoneTriangulator
     /**
      * Creates a new MonotoneTriangulator
      */
-    public MonotoneTriangulator() {}
+    public MonotoneTriangulator(double[] points)
+    {
+        set(points);
+    }
+
+    public synchronized boolean getCalculated()
+    {
+        return calculated;
+    }
+
+    public synchronized void setCalculated(boolean value)
+    {
+        calculated = value;
+    }
 
     /**
      * Adds the outer boundary to the polygon, clearing all current holes (and any current outer boundary)
@@ -99,7 +112,7 @@ public class MonotoneTriangulator
     public void reset()
     {
         vertices.clear();
-        calculationRun = false;
+        calculated = false;
     }
 
     /**
@@ -111,7 +124,7 @@ public class MonotoneTriangulator
         _input = new double[0];
         holePositions.clear();
         _output.clear();
-        calculationRun = false;
+        calculated = false;
     }
 
     /**
