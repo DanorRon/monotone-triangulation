@@ -25,6 +25,15 @@ public class MonotoneTriangulator
     /**
      * Creates a new MonotoneTriangulator
      */
+    public MonotoneTriangulator()
+    {
+
+    }
+
+    /**
+     * Creates a new MonotoneTriangulator and sets the boundary to points
+     * @param points The array of points with which to initialize the polygon, in the format [x1, y1, x2, y2, ...]
+     */
     public MonotoneTriangulator(double[] points)
     {
         set(points);
@@ -437,15 +446,15 @@ public class MonotoneTriangulator
      * @param top idk
      * @param bot idk
      */
-    private boolean isLeft(Vert index, Vert top, Vert bot) // Used to find the left and right branches of the monotone polygon
+    private boolean isLeft(int index, int top, int bot) // Used to find the left and right branches of the monotone polygon
     {
-        if (top.compareTo(bot) < 0)
+        if (top < bot)
         {
-            return top.compareTo(index) < 0 && index.compareTo(bot) < 0;
+            return top < index && index < bot;
         }
         else
         {
-            return top.compareTo(index) < 0 || index.compareTo(bot) < 0;
+            return top < index || index < bot;
         }
     }
 
@@ -454,7 +463,7 @@ public class MonotoneTriangulator
      * /* @param poly I think the polygon, but I'm not sure how it's represented
      * @return The final triangles of the triangulated polygon as an int array
      */
-    private void monoTriangulate(List<Vert> poly)
+    private List<List<double[]>> monoTriangulate(List<Vert> poly, List<Vert> verts)
     {
         List<Vert> queue = new ArrayList<Vert>(poly);
         Collections.sort(queue);
@@ -463,7 +472,7 @@ public class MonotoneTriangulator
         int top = queue.get(0).index; // TODO Should this be a Vert or an int?
         int bot = queue.get(queue.size() - 1).index;
 
-        LinkedList<Integer> stack = new LinkedList<Integer>(); // TODO Is this right (LinkedList and Integer)?
+        LinkedList<Integer> stack = new LinkedList<Integer>(); // TODO Is this right (LinkedList and Integer)? (not ArrayList?)
         stack.push(queue.get(0).index);
         stack.push(queue.get(0).index);
         int stkptr = 2;
@@ -529,10 +538,72 @@ public class MonotoneTriangulator
                 boolean abort = false;
                 while (stkptr > 0 && !abort)
                 {
-
+                    Vert anch = verts.get(index);
+                    Vert curr = verts.get(stack.get(stkptr));
+                    Vert next = verts.get(stack.get(stkptr - 1));
+                    if (side.get(index) == 1)
+                    {
+                        if (next.ccw(anch, curr))
+                        {
+                            tris.add(new int[]{stack.get(stkptr - 1), stack.get(stkptr), index});
+                            stkptr--;
+                        }
+                        else
+                        {
+                            abort = true;
+                        }
+                    }
+                    else
+                    {
+                        if (curr.ccw(anch, next))
+                        {
+                            tris.add(new int[]{stack.get(stkptr), stack.get(stkptr - 1), index});
+                            stkptr--;
+                        }
+                        else
+                        {
+                            abort = true;
+                        }
+                    }
                 }
+                stkptr++;
+                if (stkptr < stack.size())
+                {
+                    stack.set(stkptr, index);
+                }
+                else
+                {
+                    stack.add(index);
+                }
+                stkptr++;
             }
         }
+
+        // Clear off stack
+        for (int jj = 0; jj < stkptr - 1; jj++)
+        {
+            if (isLeft(stack.get(jj + 1), top, bot))
+            {
+                tris.add(new int[]{stack.get(jj), stack.get(jj - 1), bot});
+            }
+            else
+            {
+                tris.add(new int[]{stack.get(jj + 1), stack.get(jj), bot});
+            }
+        }
+
+        // Convert into proper triangles
+        List<List<double[]>> result = new ArrayList<List<double[]>>();
+        for (int[] t : tris)
+        {
+            List<double[]> entry = new ArrayList<double[]>();
+            for (int ind : t)
+            {
+                entry.add(new double[]{verts.get(ind).x, verts.get(ind).y});
+            }
+            result.add(entry);
+        }
+        return result;
     }
 
     /**
