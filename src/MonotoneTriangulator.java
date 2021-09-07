@@ -584,7 +584,7 @@ public class MonotoneTriangulator
         {
             if (isLeft(stack.get(jj + 1), top, bot))
             {
-                tris.add(new int[]{stack.get(jj), stack.get(jj - 1), bot});
+                tris.add(new int[]{stack.get(jj), stack.get(jj + 1), bot});
             }
             else
             {
@@ -667,6 +667,34 @@ public class MonotoneTriangulator
                 for (Vert v : poly)
                 {
                     w.write("(" + v.x + "," + v.y + ")\n");
+                }
+            }
+            w.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        try
+        {
+            FileWriter w = new FileWriter(new File("holes-triangles.txt"));
+            boolean first = true;
+            for (List<Vert> poly : parts)
+            {
+                if (!first)
+                {
+                    w.write("---\n");
+                }
+                else
+                {
+                    first = false;
+                }
+                List<List<double[]>> tris = monoTriangulate(poly, vertices);
+                for (List<double[]> t : tris)
+                {
+                    w.write("(" + t.get(0)[0] + "," + t.get(0)[1] + ")\t" + "(" + t.get(1)[0] + "," + t.get(1)[1] + ")\t" + "(" + t.get(2)[0] + "," + t.get(2)[1] + ")\n");
                 }
             }
             w.close();
