@@ -478,7 +478,7 @@ public class MonotoneTriangulator
         int stkptr = 2;
 
         // Mark the sides
-        HashMap<Integer, Integer> side = new HashMap<Integer, Integer>(); // TODO Reference type?
+        int[] side = new int[verts.size()]; // TODO Is it correct for side.length to be the size of verts so that indices are mapped to values, but side won't be completely full?
         int toppos = -1;
         int botpos = -1;
         for (int x = 0; x < poly.size(); x++)
@@ -486,26 +486,26 @@ public class MonotoneTriangulator
             if (poly.get(x).index == top)
             {
                 toppos = x;
-                side.put(toppos, 0);
+                side[toppos] = 0;
             }
             else if (poly.get(x).index == bot)
             {
                 botpos = x;
-                side.put(botpos, 0);
+                side[botpos] = 0;
             }
         }
 
         int left = (toppos + 1) % poly.size();
         while (left != botpos)
         {
-            side.put(poly.get(left).index, 1);
+            side[poly.get(left).index] = 1;
             left = (left + 1) % poly.size();
         }
 
         int rght = (toppos + poly.size() - 1) % poly.size();
         while (rght != botpos)
         {
-            side.put(poly.get(rght).index, -1);
+            side[poly.get(rght).index] = -1;
             rght = (rght + poly.size() - 1) % poly.size();
         }
 
@@ -514,11 +514,11 @@ public class MonotoneTriangulator
         {
             int index = queue.get(x).index;
             int last = stack.get(stkptr - 1);
-            if (side.get(index) != side.get(last)) // TODO != or .equals()?
+            if (side[index] != side[last])
             {
                 for (int y = 0; y < stkptr - 1; y++)
                 {
-                    if (side.get(index) == 1)
+                    if (side[index] == 1)
                     {
                         tris.add(new int[]{stack.get(y + 1), stack.get(y), index});
                     }
@@ -541,7 +541,7 @@ public class MonotoneTriangulator
                     Vert anch = verts.get(index);
                     Vert curr = verts.get(stack.get(stkptr));
                     Vert next = verts.get(stack.get(stkptr - 1));
-                    if (side.get(index) == 1)
+                    if (side[index] == 1)
                     {
                         if (next.ccw(anch, curr))
                         {
