@@ -521,10 +521,16 @@ public class MonotoneTriangulator
                     if (side[index] == 1)
                     {
                         tris.add(new int[]{stack.get(y + 1), stack.get(y), index});
+                        _output.add(stack.get(y + 1));
+                        _output.add(stack.get(y));
+                        _output.add(index);
                     }
                     else
                     {
                         tris.add(new int[]{stack.get(y), stack.get(y + 1), index});
+                        _output.add(stack.get(y));
+                        _output.add(stack.get(y + 1));
+                        _output.add(index);
                     }
                 }
                 stack.clear();
@@ -546,6 +552,9 @@ public class MonotoneTriangulator
                         if (next.ccw(anch, curr))
                         {
                             tris.add(new int[]{stack.get(stkptr - 1), stack.get(stkptr), index});
+                            _output.add(stack.get(stkptr - 1));
+                            _output.add(stack.get(stkptr));
+                            _output.add(index);
                             stkptr--;
                         }
                         else
@@ -558,6 +567,9 @@ public class MonotoneTriangulator
                         if (curr.ccw(anch, next))
                         {
                             tris.add(new int[]{stack.get(stkptr), stack.get(stkptr - 1), index});
+                            _output.add(stack.get(stkptr - 1));
+                            _output.add(stack.get(stkptr));
+                            _output.add(index);
                             stkptr--;
                         }
                         else
@@ -585,10 +597,16 @@ public class MonotoneTriangulator
             if (isLeft(stack.get(jj + 1), top, bot))
             {
                 tris.add(new int[]{stack.get(jj), stack.get(jj + 1), bot});
+                _output.add(stack.get(jj));
+                _output.add(stack.get(jj + 1));
+                _output.add(bot);
             }
             else
             {
                 tris.add(new int[]{stack.get(jj + 1), stack.get(jj), bot});
+                _output.add(stack.get(jj + 1));
+                _output.add(stack.get(jj));
+                _output.add(bot);
             }
         }
 
@@ -704,6 +722,8 @@ public class MonotoneTriangulator
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+
+        calculated = true;
     }
 
 
@@ -713,7 +733,16 @@ public class MonotoneTriangulator
      * @return an array representing the triangulated polygon // TODO Are there subarrays for each point?
      * // TODO Should this return something, or modify _output?
      */
-    public double[] getTriangles() {return null;}
+    public int[] getTriangles()
+    {
+        Object[] outputArrayObject = _output.toArray();
+        int[] outputArrayInt = new int[outputArrayObject.length];
+        for (int i = 0; i < outputArrayObject.length; i++)
+        {
+            outputArrayInt[i] = (int) outputArrayObject[i];
+        }
+        return outputArrayInt;
+    }
 
     /**
      * Represents a vertex
