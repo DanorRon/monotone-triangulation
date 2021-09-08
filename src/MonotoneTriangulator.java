@@ -770,7 +770,7 @@ public class MonotoneTriangulator
         {
             if (this.y == other.y)
             {
-                return Double.compare(this.x, other.x);
+                return Double.compare(this.x, other.x); // TODO Why did I not just do normal comparison?
             }
             return Double.compare(this.y, other.y);
         }
