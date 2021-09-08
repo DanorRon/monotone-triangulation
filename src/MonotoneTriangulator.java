@@ -39,11 +39,25 @@ public class MonotoneTriangulator
         set(points);
     }
 
+    /**
+     * Returns calculated
+     *
+     * Synchronized so that calculated cannot be accessed while it is changing, to avoid data races.
+     *
+     * @return calculated
+     */
     public synchronized boolean getCalculated()
     {
         return calculated;
     }
 
+    /**
+     * Sets calculated to value
+     *
+     * Synchronized so that calculated cannot be accessed while it is changing, to avoid data races.
+     *
+     * @param value The value to set calculated to
+     */
     public synchronized void setCalculated(boolean value)
     {
         calculated = value;
@@ -413,8 +427,11 @@ public class MonotoneTriangulator
 
     /**
      * Partitions the polygon after the diagonals are drawn
+     *
+     * Partitions by tracing through each doubly linked list. They are no longer organized because diagonalize and add_diagonal created vertex copies, so each partition has to be separated.
+     *
      * @param verts The List of vertices
-     * @return Something, not really sure
+     * @return A List containing each partition as a List of Verts, doubly linked together
      */
     private List<List<Vert>> partition (List<Vert> verts)
     {
@@ -441,10 +458,10 @@ public class MonotoneTriangulator
     }
 
     /**
-     * Does something, not sure
-     * @param index idk
-     * @param top idk
-     * @param bot idk
+     * Finds whether the Vert with index index is on the right or left branch of a monotone polygon, for usage in monoTriangulate
+     * @param index The index of the Vert to be considered
+     * @param top The index of the topmost Vert in the monotone polygon
+     * @param bot The index of the bottommost Vert in the monotone polygon
      */
     private boolean isLeft(int index, int top, int bot) // Used to find the left and right branches of the monotone polygon
     {
@@ -460,8 +477,9 @@ public class MonotoneTriangulator
 
     /**
      * Triangulates the monotone partitions of the polygon
-     * /* @param poly I think the polygon, but I'm not sure how it's represented
-     * @return The final triangles of the triangulated polygon as an int array
+     * @param poly The monotone partition to be triangulated
+     * @param verts The list of vertices in the entire (not just the partition)
+     * @return A List containing the final triangles for debugging, each in the form of a List of 2-element coordinate arrays
      */
     private List<List<double[]>> monoTriangulate(List<Vert> poly, List<Vert> verts)
     {
@@ -723,15 +741,14 @@ public class MonotoneTriangulator
             e.printStackTrace();
         }
 
-        calculated = true;
+        setCalculated(true);
     }
 
 
 
     /**
      * Returns the answer after calculation
-     * @return an array representing the triangulated polygon // TODO Are there subarrays for each point?
-     * // TODO Should this return something, or modify _output?
+     * @return an array containing the indices of the vertices of the triangulated polygon (counterclockwise), in the format [t1_1, t1_2, t1_3, t2_1, t2_2, t2_3, ...]
      */
     public int[] getTriangles()
     {
@@ -756,6 +773,12 @@ public class MonotoneTriangulator
         public Vert next;
         public Vert prev;
 
+        /**
+         * Creates a new Vert
+         * @param index The index of the Vert
+         * @param x The x-coordinate of the Vert
+         * @param y The y-coordinate of the Vert
+         */
         public Vert(int index, double x, double y) // TODO What access should this be?
         {
             this.index = index;
@@ -766,6 +789,15 @@ public class MonotoneTriangulator
             this.prev = null;
         }
 
+        /**
+         * Compares this with other
+         *
+         * Compares vertically (greater if higher), and if the y-coordinates are the same, compares horizontally (greater if greater x-value).
+         * If this and other have the same y-value, the comparison is equivalent to the Vert with the greater y-value in a slight counterclockwise rotation of the polygon
+         *
+         * @param other The Vert to compare to
+         * @return A positive integer if this is greater than other, a negative integer if this is less than other, and 0 if this is equal to other
+         */
         public int compareTo(Vert other) // Counterclockwise rotation of the polygon
         {
             if (this.y == other.y)
@@ -775,6 +807,11 @@ public class MonotoneTriangulator
             return Double.compare(this.y, other.y);
         }
 
+        /**
+         * Checks the equality of this and other
+         * @param other The Vert to compare to
+         * @return true if this and other are equal, false otherwise
+         */
         public boolean equals(Object other) // TODO Is this right?
         {
             if (other == this) return true;
@@ -783,6 +820,10 @@ public class MonotoneTriangulator
             return this.index == v.index;
         }
 
+        /**
+         * Returns a String representation of the Vert
+         * @return a String representation of the Vert
+         */
         public String toString()
         {
             String str = index + "-(" + x + ", " + y + ")";
@@ -797,6 +838,10 @@ public class MonotoneTriangulator
             return val > 0;
         }
 
+        /**
+         * Creates a copy of the Vert
+         * @return a copy of the Vert
+         */
         public Vert copy()
         {
             Vert result = new Vert(index, x, y);
@@ -817,12 +862,23 @@ public class MonotoneTriangulator
         public int index;
         List<Vert> verts; // TODO Why is this a parameter for Edge
 
+        /**
+         * Creates a new Edge with index index
+         * @param index The index of the Edge
+         * @param verts The list of vertices in the polygon
+         */
         public Edge(int index, List<Vert> verts) // TODO What access should this be?
         {
             this.index = index;
             this.verts = verts;
         }
 
+        /**
+         * Compares this with other
+         *
+         * @param other The Edge to compare to
+         * @return A positive integer if this is greater than other, a negative integer if this is less than other, and 0 if this is equal to other
+         */
         public int compareTo(Edge other)
         {
             if (this.equals(other)) return 0; // TODO is this correct?
@@ -854,6 +910,11 @@ public class MonotoneTriangulator
             }
         }
 
+        /**
+         * Checks the equality of this and other
+         * @param other The Edge to compare to
+         * @return true if this and other are equal, false otherwise
+         */
         public boolean equals(Object other) // TODO Is this right?
         {
             if (other == this) return true;
@@ -862,6 +923,10 @@ public class MonotoneTriangulator
             return this.index == v.index;
         }
 
+        /**
+         * Returns a String representation of the Vert
+         * @return a String representation of the Vert
+         */
         public String toString()
         {
             Vert v = verts.get(index);
@@ -869,7 +934,9 @@ public class MonotoneTriangulator
         }
     }
 
-    // TODO Add documentation
+    /**
+     * Denote the type of each vertex
+     */
     enum Type
     {
         START,
