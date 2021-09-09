@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -491,8 +493,8 @@ public class MonotoneTriangulator
         int bot = queue.get(queue.size() - 1).index;
 
         LinkedList<Integer> stack = new LinkedList<Integer>(); // TODO Is this right (LinkedList and Integer)? (not ArrayList?)
-        stack.push(queue.get(0).index);
-        stack.push(queue.get(0).index);
+        stack.add(queue.get(0).index);
+        stack.add(queue.get(1).index);
         int stkptr = 2;
 
         // Mark the sides
@@ -552,8 +554,8 @@ public class MonotoneTriangulator
                     }
                 }
                 stack.clear();
-                stack.push(queue.get(x - 1).index);
-                stack.push(queue.get(x).index);
+                stack.add(queue.get(x - 1).index);
+                stack.add(queue.get(x).index);
                 stkptr = 2;
             }
             else
@@ -728,9 +730,10 @@ public class MonotoneTriangulator
                     first = false;
                 }
                 List<List<double[]>> tris = monoTriangulate(poly, vertices);
+                NumberFormat formatter = new DecimalFormat("##.###");
                 for (List<double[]> t : tris)
                 {
-                    w.write("(" + t.get(0)[0] + "," + t.get(0)[1] + ")\t" + "(" + t.get(1)[0] + "," + t.get(1)[1] + ")\t" + "(" + t.get(2)[0] + "," + t.get(2)[1] + ")\n");
+                    w.write("(" + formatter.format(t.get(0)[0]) + ", " + formatter.format(t.get(0)[1]) + ")\t" + "(" + formatter.format(t.get(1)[0]) + "," + formatter.format(t.get(1)[1]) + ")\t" + "(" + formatter.format(t.get(2)[0]) + "," + formatter.format(t.get(2)[1]) + ")\n");
                 }
             }
             w.close();
